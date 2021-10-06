@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ecommerce</title>
+    <!-- css -->
+    <link rel="stylesheet" href="./css/style.css" />
+    <!-- fontawesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- header -->
+    <header class="header">
+      <!-- logo -->
+      <a href="#" class="logo">Javascript</a>
+      <!-- navbar -->
+      <nav class="navbar">
+        <a href="#home">home</a>
+        <a href="#home">products</a>
+        <a href="#home">categorys</a>
+        <a href="#home">blog</a>
+        <a href="#home">about</a>
+      </nav>
+      <!-- icon -->
+      <div class="icons">
+        <div class="fas fa-shopping-cart" id="cart-btn">
+          <div class="cart-number" id="cart-number">0</div>
+        </div>
+        <div class="fas fa-bars" id="menu-toggle"></div>
+      </div>
+      <!-- shopping -->
+      <div class="shopping-cart">
+        <div id="shopping-cart">
+          <!-- <div class="box">
+            <i class="fas fa-trash"></i>
+            <img
+              src="https://images.unsplash.com/photo-1560155016-bd4879ae8f21?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=464&q=80"
+              alt=""
+            />
+            <div class="content">
+              <h3>avocado</h3>
+              <div class="price">$49.99</div>
+              <input
+                type="number"
+                class="input-count"
+                id="count"
+                min="1"
+                max="100"
+                value="1"
+              />
+            </div>
+          </div> -->
+        </div>
+        <div class="total">
+          total : $
+          <span id="total">0.00</span>
+        </div>
+        <a href="#" class="checkout">checkout</a>
+      </div>
+    </header>
+    <!-- products -->
+    <section class="products" id="products">
+      <div class="products-box" id="products-list">
+        <!-- <div class="product">
+          <div class="product-img">
+            <a href="#" class="product-link">
+              <img
+                src="https://images.unsplash.com/photo-1560155016-bd4879ae8f21?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=464&q=80"
+                alt=""
+              />
+            </a>
+            <div class="add-cart">Add to cart</div>
+          </div>
+          <div class="product-content">
+            <div class="title">Avocado</div>
+            <div class="bottom">
+              <div class="price">$3</div>
+              <div class="quantity">Đã bán 2k</div>
+            </div>
+          </div>
+        </div> -->
+      </div>
+    </section>
+    <!-- script -->
+    <script src="./js/show-menu.js"></script>
+    <script src="./js/show-cart.js"></script>
+    <script src="./js/add-cart.js"></script>
+  </body>
+</html>
