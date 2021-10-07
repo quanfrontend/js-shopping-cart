@@ -36,19 +36,18 @@ const products = [
     inCart: 0,
   },
 ];
-
 // Mảng giỏ hàng
 const productsCart = [];
-
 // Query
 const listProducts = document.querySelector("#products-list");
 const listProductsCart = document.querySelector("#shopping-cart");
 const total = document.querySelector("#total");
 const numberCart = document.querySelector("#cart-number");
 const checkout = document.querySelector(".checkout");
-
+let productsLocalStorage = localStorage.getItem("products");
+productsLocalStorage = JSON.parse(productsLocalStorage);
 // render danh sách sản phẩm
-function renderProducts() {
+const renderProducts = () => {
   let renderPro = products.map((product) => {
     return `
       <div class="product">
@@ -69,13 +68,16 @@ function renderProducts() {
     `;
   });
   return (listProducts.innerHTML = renderPro.join(""));
-}
+};
 renderProducts();
-
 // render danh sách sản phẩm trong giỏ hàng
-function renderProductsCart() {
-  let render = productsCart.map((productCart, index) => {
-    return `
+const renderProductsCart = () => {
+  let productsLocalStorage = localStorage.getItem("products");
+  productsLocalStorage = JSON.parse(productsLocalStorage);
+  if (productsLocalStorage && listProductsCart) {
+    let render = Object.values(productsLocalStorage).map(
+      (productCart, index) => {
+        return `
       <div class="box">
         <i class="fas fa-trash" data-id="${index}"></i>
         <img src="${productCart.url}" alt="" />
@@ -93,45 +95,84 @@ function renderProductsCart() {
         </div>
       </div>
     `;
+      }
+    );
+    return (listProductsCart.innerHTML = render.join(""));
+  }
+};
+//  Sử dụng localstorage =========================================
+// Lưu sản phẩm
+const saveLocalStorage = (itemProduct) => {
+  if (productsLocalStorage) {
+    if (!productsLocalStorage[itemProduct.id]) {
+      productsLocalStorage = {
+        ...productsLocalStorage,
+        [itemProduct.id]: itemProduct,
+      };
+    }
+    productsLocalStorage[itemProduct.id].inCart += 1;
+  } else {
+    itemProduct.inCart = 1;
+    productsLocalStorage = {
+      [itemProduct.id]: itemProduct,
+    };
+  }
+  localStorage.setItem("products", JSON.stringify(productsLocalStorage));
+};
+// Lưu số lượng sản phẩm
+const cartNumber = () => {
+  if (productsLocalStorage) {
+    let getNum = Object.values(productsLocalStorage).reduce((sum, num) => {
+      return sum + num.inCart;
+    }, 0);
+    localStorage.setItem("cartNumber", getNum);
+    numberCart.textContent = getNum;
+  }
+};
+// Lưu tổng số tiền
+const totalPrice = () => {
+  if (productsLocalStorage) {
+    let getPrice = Object.values(productsLocalStorage).reduce((sum, num) => {
+      return sum + num.price * num.inCart;
+    }, 0);
+    localStorage.setItem("total", getPrice);
+    total.textContent = getPrice;
+  }
+};
+// Tăng giảm số lượng
+const plusMinus = (itemProduct) => {
+  let input = document.querySelectorAll(".input-count");
+  input.forEach((element, index) => {
+    element.addEventListener("change", () => {
+      if (productsLocalStorage) {
+        productsLocalStorage[index].inCart = +element.value;
+      }
+      localStorage.setItem("products", JSON.stringify(productsLocalStorage));
+      cartNumber();
+      totalPrice();
+    });
   });
-  return (listProductsCart.innerHTML = render.join(""));
-}
-
-// Tính tổng tiền sản phẩm trong giỏ hàng
-function totalPrice() {
-  let s = productsCart.reduce((sum, num) => {
-    return sum + num.price * num.inCart;
-  }, 0);
-  return (total.textContent = s);
-}
-
-// Hiển thị số sản phẩm thêm
-function showNumber() {
-  let showNum = productsCart.reduce((a, b) => {
-    return a + +b.inCart;
-  }, 0);
-  return (numberCart.textContent = showNum);
-}
-
-// Checkout
-function check() {
-  checkout.addEventListener("click", () => {
-    return alert("Success");
-  });
-}
-check();
-
-// Thêm sản phẩm vào giỏ
+};
+// ====================================================================
+// Click thêm sản phẩm vào giỏ
 const btnAdd = document.querySelectorAll(".add-cart");
-
 btnAdd.forEach((element, index) => {
-  btnAdd[index].addEventListener("click", () => {
+  element.addEventListener("click", () => {
     onAddCart(products[index]);
   });
 });
-
 const onAddCart = (itemProduct) => {
-  // Thêm sản phẩm vào productsCart
+  // Save localstorage
+  saveLocalStorage(itemProduct);
+  // render sản phẩm
+  renderProductsCart();
+  // render số lượng
+  cartNumber();
+  // Tính tổng
+  totalPrice();
+  // Tăng giảm số lượng
+  plusMinus(itemProduct);
+  // Thêm sản phẩm
   const value = productsCart.findIndex((item) => itemProduct.id === item.id);
   if (value < 0) {
     itemProduct.inCart = 1;
@@ -139,37 +180,25 @@ const onAddCart = (itemProduct) => {
   } else {
     productsCart[value].inCart += 1;
   }
-  // Hiển thị số sản phẩm
-  showNumber();
-
-  // Render sản phẩm đã thêm vào giỏ
-  renderProductsCart();
-
-  // Tính tổng tiền sản phẩm
-  totalPrice();
-
-  // Tăng giảm số lượng
-  const counts = document.querySelectorAll(".input-count");
-  counts.forEach((element, index) => {
-    counts[index].addEventListener("change", () => {
-      productsCart[index].inCart = counts[index].value;
-      totalPrice();
-      showNumber();
-    });
-  });
 };
 
-// Xóa sản phẩm trong giỏ hàng
-function deleteProduct() {
-  listProductsCart.addEventListener("click", (event) => {
-    const btnDelete = event.target;
-    const id = +btnDelete.dataset.id;
-    if (id >= 0) {
-      productsCart.splice(id, 1);
-      renderProductsCart();
-      totalPrice();
-      showNumber();
-    }
-  });
-}
-deleteProduct();
+// Load sản phẩm
+renderProductsCart();
+// Load số lượng
+cartNumber();
+// Load tổng tiền
+totalPrice();
+// Xóa sản phẩm
+const list = document.querySelector("#shopping-cart");
+list.addEventListener("click", (event) => {
+  let btn = event.target;
+  let id = btn.dataset.id;
+  if (id >= 0) {
+    productsCart.splice(id, 1);
+    productsLocalStorage = productsCart;
+    localStorage.setItem("products", JSON.stringify(productsLocalStorage));
+    renderProductsCart();
+    cartNumber();
+    totalPrice();
+  }
+});
