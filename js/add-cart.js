@@ -37,7 +37,7 @@ const products = [
   },
 ];
 // Mảng giỏ hàng
-const productsCart = [];
+let productsCart = [];
 // Query
 const listProducts = document.querySelector("#products-list");
 const listProductsCart = document.querySelector("#shopping-cart");
@@ -153,6 +153,14 @@ const plusMinus = (itemProduct) => {
     });
   });
 };
+// Lưu productCart
+const savePro = () => {
+  let productsLocalStorage = localStorage.getItem("products");
+  productsLocalStorage = JSON.parse(productsLocalStorage);
+  if (productsLocalStorage) {
+    productsCart = productsLocalStorage;
+  }
+};
 // ====================================================================
 // Click thêm sản phẩm vào giỏ
 const btnAdd = document.querySelectorAll(".add-cart");
@@ -189,16 +197,20 @@ cartNumber();
 // Load tổng tiền
 totalPrice();
 // Xóa sản phẩm
-const list = document.querySelector("#shopping-cart");
-list.addEventListener("click", (event) => {
-  let btn = event.target;
-  let id = btn.dataset.id;
-  if (id >= 0) {
-    productsCart.splice(id, 1);
-    productsLocalStorage = productsCart;
-    localStorage.setItem("products", JSON.stringify(productsLocalStorage));
-    renderProductsCart();
-    cartNumber();
-    totalPrice();
-  }
-});
+const deletePro = () => {
+  const list = document.querySelector("#shopping-cart");
+  list.addEventListener("click", (event) => {
+    let btn = event.target;
+    let id = btn.dataset.id;
+    if (id >= 0) {
+      productsCart.splice(id, 1);
+      productsLocalStorage = productsCart;
+      localStorage.setItem("products", JSON.stringify(productsLocalStorage));
+      renderProductsCart();
+      cartNumber();
+      totalPrice();
+    }
+  });
+};
+deletePro();
+savePro();
