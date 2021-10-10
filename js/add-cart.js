@@ -1,116 +1,100 @@
-// Selector
 const listProduct = document.querySelector("#products-list");
-const listCart = document.querySelector("#shopping-cart");
-const showNum = document.querySelector("#cart-number");
-let productsLS = localStorage.getItem("products");
-productsLS = JSON.parse(productsLS);
+const listProductCart = document.querySelector("#shopping-cart");
+let cartNumber = document.querySelector("#cart-number");
+let totalNumber = document.querySelector("#total");
+const productsCart = [];
 
-const url = "https://5fa3d0d9f10026001618df85.mockapi.io/products";
-
-const getResponse = (response) => response.json();
-
-const renderData = (data) => {
-  const html = data.map((item) => {
+const renderProducts = (products) => {
+  let htmls = products.map((product) => {
     return `
-      <div class="product">
-        <div class="product-img">
-          <a href="#" class="product-link">
-            <img
-              src="${item.image}"
-              alt=""
-            />
-          </a>
-          <div class="add-cart number-${item.id}">Add to cart</div>
-        </div>
-        <div class="product-content">
-          <div class="title">${item.name}</div>
-          <div class="bottom">
-            <div class="price">$${item.price}</div>
-            <div class="quantity">Đã bán 2k</div>
-          </div>
-        </div>
-      </div>
-    `;
-  });
-  listProduct.innerHTML = html.join("");
-  // =====================================
-  const addCart = document.querySelectorAll(".add-cart");
-  addCart.forEach((element, index) => {
-    addCart[index].addEventListener("click", () => {
-      addToCart(data[index]);
-      loadNumber();
-    });
-  });
-  const addToCart = (product) => {
-    addLocalStorage(product);
-    renderCart();
-  };
-};
-
-const renderCart = () => {
-  if (productsLS) {
-    const htmlCart = Object.values(productsLS).map((item) => {
-      return `
-        <div class="box">
-          <i class="fas fa-trash"></i>
+    <div class="product">
+      <div class="product-img">
+        <a href="#" class="product-link">
           <img
-            src="${item.image}"
+            src="${product.image}"
             alt=""
           />
-          <div class="content">
-            <h3>${item.name}</h3>
-            <div class="price">$${item.price}</div>
-            <input
-              type="number"
-              class="input-count"
-              id="count"
-              min="1"
-              max="100"
-              value="1"
-            />
-          </div>
+        </a>
+        <div class="add-cart" id="add-cart">Add to cart</div>
+      </div>
+      <div class="product-content">
+        <div class="title">${product.name}</div>
+        <div class="bottom">
+          <div class="price">$${product.price}</div>
+          <div class="quantity">Đã bán 2k</div>
         </div>
-      `;
+      </div>
+    </div>
+    `;
+  });
+  listProduct.innerHTML = htmls.join("");
+  return products;
+};
+const renderProductsCart = () => {
+  let htmls = productsCart.map((productCart, index) => {
+    return `
+    <div class="box">
+      <i class="fas fa-trash" data-id="${index}"></i>
+      <img
+        src="${productCart.image}"
+        alt=""
+      />
+      <div class="content">
+        <h3>${productCart.name}</h3>
+        <div class="price">$${productCart.price}</div>
+        <input
+          type="number"
+          class="input-count"
+          id="count"
+          min="1"
+          max="1"
+          value="1"
+        />
+      </div>
+    </div>
+    `;
+  });
+  listProductCart.innerHTML = htmls.join("");
+};
+const count = () => {
+  cartNumber.textContent = productsCart.length;
+};
+const total = () => {
+  let totalPrice = productsCart.reduce((sum, num) => {
+    return sum + +num.price;
+  }, 0);
+  totalNumber.textContent = totalPrice;
+};
+const url = "https://5fa3d0d9f10026001618df85.mockapi.io/products";
+// Method: GET
+fetch(url)
+  .then((res) => res.json())
+  .then((data) => renderProducts(data))
+  .then((products) => addToCart(products))
+  .catch((err) => console.log(err));
+
+// Function
+function addToCart(products) {
+  const btnAdd = document.querySelectorAll(".add-cart");
+  btnAdd.forEach((element, index) => {
+    btnAdd[index].addEventListener("click", () => {
+      productsCart.push(products[index]);
+      renderProductsCart();
+      count();
+      total();
     });
-    listCart.innerHTML = htmlCart.join("");
-  }
-};
-
-const addLocalStorage = (product) => {
-  if (productsLS) {
-    if (!productsLS[product.id]) {
-      productsLS = {
-        ...productsLS,
-        [product.id]: product,
-      };
+  });
+}
+function deletePro() {
+  listProductCart.addEventListener("click", (e) => {
+    let id = +e.target.dataset.id;
+    if (id >= 0) {
+      productsCart.splice(id, 1);
+      console.log(productsCart);
+      renderProductsCart();
+      count();
+      total();
     }
-  } else {
-    productsLS = {
-      [product.id]: product,
-    };
-  }
-  localStorage.setItem("products", JSON.stringify(productsLS));
-};
-
-const onLoadNumber = () => {
-  let numberCart = localStorage.getItem("numberCart");
-  numberCart = +numberCart;
-  if (numberCart) {
-    showNum.textContent = numberCart;
-  }
-};
-
-const loadNumber = () => {
-  let numberCart = localStorage.getItem("numberCart");
-  numberCart = +numberCart;
-  if (numberCart) {
-    localStorage.setItem("numberCart", numberCart + 1);
-    showNum.textContent = numberCart + 1;
-  } else {
-    localStorage.setItem("numberCart", 1);
-    showNum.textContent = 1;
-  }
-};
-
-// GET
-fetch(url).then(getResponse).then(renderData);
+  });
+}
+deletePro();
