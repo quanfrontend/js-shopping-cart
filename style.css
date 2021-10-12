@@ -131,11 +131,6 @@ section {
   color: var(--text-color);
   font-size: 1.6rem;
   padding-bottom: 0.5rem;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .header .shopping-cart .box .content span {
   color: var(--gray-color);
@@ -146,6 +141,7 @@ section {
   color: var(--text-color);
   padding: 0 1rem;
   text-align: center;
+  /* width: 100%; */
   height: 30px;
   font-size: 1.4rem;
   border-radius: 0.5rem;
